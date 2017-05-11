@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" type="text/css" href="css/960.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/style.css" />
+	<link rel="stylesheet" type="text/css" href="css/obsidian.css" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Adam Boehm Software Portfolia</title>
+</head>
+
+<body>
+<div class="header">
+	<div class="container_12">
+		<div class="grid_5">
+			<h1>ADAM BOEHM</h1>
+			<p>SOFTWARE DEVELOPER</p>
+		</div>
+		<!-- End grid_5 -->
+		<div class="nav grid_7">
+			<a href="index.html">HOME</a> / <a href="java.html">JAVA</a> / <a href="javascript.html">JAVASCRIPT</a> / <a class="active" href="php.html">PHP</a> / <a href="sql.html">SQL</a>
+		</div>
+		<!-- End grid 7 -->
+	</div>
+	<!-- End container 12 -->
+</div>
+<!-- End header -->
+<hr>
+	<div class="container_12">
+		<div class="grid_10">
+			<h2>PHP Software Bug Reports</h2>
+			<p> This project allows the user to create and edit software bug reports. <br /><br />
+				<strong>Index</strong> <br />
+			This page opens up the current directory and reads all the files in it. It strips all files not ending in .txt and prints those .txt files in a href allowing the user to read the contents of the file. <br /><br />
+				<strong>Create New Report</strong> <br />
+			This page contains a form with various input fields allowing the user to enter information pertaining to the bug report. The form posts to itself and loads the input information into seperate variables.
+			It then creates a new text file named after what the user input into the Report Name field, stripping whitespace to avoid errors. The information loaded into the variables are then written into the new text file and saved. <br /><br />
+				<strong>Edit a report</strong> <br />
+			This page uses the same method to list all current .txt files in the directory as the Index page, but this time in a drop box to allow the user to choose a report to edit. The user chooses a report and clicks "Edit Report". 
+			A text area is then displayed with the information from the file they chose. The user can then edit what they desire. Upon clicking "Update File", the newly edited text is then written to the bug report and saved.
+			</p> 
+			<div class="slideshow-container2">
+				<div class="mySlides fade">
+					<img src="img/phpIndex1.png" style="width:100%">
+				</div>
+				<div class="mySlides fade">
+					<img src="img/phpIndex2.png" style="width:100%">
+				</div>
+				<div class="mySlides fade">
+					<img src="img/phpIndex3.png" style="width:100%">
+				</div>
+				<div class="mySlides fade">
+					<img src="img/phpIndex4.png" style="width:100%">
+				</div>
+				<a class="prev2" >&#10094;</a>
+				<a class="next2">&#10095;</a>
+		</div>
+			<!-- End slideshow-container -->
+			<br /><br /><br />
+		</div>
+		<!-- End container 10 -->	
+		<div class="grid_10">
+			<h2>Source Code</h2>
+			<h4>Index</h4>
+			<pre><code>&ltarticle>
+	&lth2>Software Bug Reports&lt/h2>
+	&lth3 id="title">Main&lt/h3>
+
+		&ltdiv id="nav">
+		 	&ltul>
+				&ltli>&lta class="active" href="index.php">Index&lt/a>&lt/li>
+				&ltli>&lta href="report_new.php">Create New Report&lt/a>&lt/li>
+				&ltli>&lta href="report_edit.php">Edit a report&lt/a>&lt/li>
+			&lt/ul>	
+	&lt/div>
+	
+	&ltarticle class="index">
+		&ltbr />Current reports are below: &ltbr />&ltbr />
+		&lt?php
+		// read files in current directory (homework02)
+		if ($handle = opendir('.')) {
+			while (false !== ($file = readdir($handle))) {
+				// only show files ending in .txt (this will not show the php files in the directory)
+				if ($file != "." && $file != ".." && strtolower(substr($file, strrpos($file, '.') + 1)) == 'txt') {
+					// echo out the name of the text files in an clickable list so user can READ its content
+					echo "&lta href=$file>".basename($file)."&lt/a>";
+					echo "&ltbr />";
+				}
+			}
+		// close directory
+		closedir($handle);
+		}
+		?>
+		
+	&lt/article>
+	
+&lt/article>
+&lt/body>
+&lt/html></code></pre>
+
+
+<h4>Create New Report</h4>
+<pre><code>&ltarticle>
+ &lth2>Software Bug Reports</h2>
+ &lth3 id="title">Create New Report</h3>
+   &ltform action="?" method="post">
+		&ltdiv id="nav">
+   			&ltul>
+				&ltli>&lta href="index.php">Index&lt/a>&lt/li>
+				&ltli>&lta class="active" href="report_new.php">Create New Report&lt/a>&lt/li>
+				&ltli>&lta href="report_edit.php">Edit a report&lt/a>&lt/li>
+			&lt/ul>
+		&lt/div>
+         &ltfieldset id="bugReports">
+		    &ltlabel for="reportName">Report Name</label>
+            &ltinput type="text" id="reportName" name="reportName" required/>
+            &ltlabel for="prodName">Product Name</label>
+            &ltinput type="text" id="prodName" name="prodName" required/>
+            &ltlabel for="prodVersion">Version</label>
+            &ltinput type="text" id="prodVersion" name="prodVersion" required/>
+            &ltlabel for="hardType">Type of Hardware</label>
+            &ltinput type="text" id="hardType" name="hardType" required/>
+            &ltlabel for="opSystem">Operating System</label>
+            &ltinput type="text" id="opSystem" name="opSystem" required/>
+            &ltlabel for="frequency">Frequency of Occurence</label>
+            &ltinput type="text" id="frequency" name="frequency" required/>
+            &ltlabel for="solutions">Proposed Solutions</label>
+			&lttextarea name="solutions" id="solutions" rows="4" cols="60" novalidate required></textarea>
+         &lt/fieldset>
+         &ltfieldset id="submitbutton">
+            &ltinput type="submit" name="submit" id="submitBtn" value="Create New Report" />
+         &lt/fieldset>
+      &lt/form>
+&lt/article>
+
+
+&lt/body>
+&lt/html>
+
+&lt?php
+if (isset($_POST['submit'])) {
+	// VARIABLES 
+	$reportName = $_POST['reportName'];
+	$prodName = $_POST['prodName'];
+	$prodVersion = $_POST['prodVersion'];
+	$hardType = $_POST['hardType'];
+	$opSystem = $_POST['opSystem'];
+	$frequency = $_POST['frequency'];
+	$solutions = $_POST['solutions'];
+	
+	// remove the white spaces in the report name if user entered more than one word 
+	$newReport = str_replace(' ', '', $reportName);
+
+	echo "&ltdiv style='padding-left:30px;'> Report name: " . $newReport . " created &ltbr />&ltbr />";
+
+	
+	// open/create a new file with the name of the report the user entered
+	$newFile = fopen($newReport . ".txt", "w") or die("Unable to open file!");
+	// print all information user entered in form into the new file 
+	fwrite($newFile, 'Report name: ' . $newReport . "\r\n");
+	fwrite($newFile, 'Product name: ' . $prodName . "\r\n");
+	fwrite($newFile, 'Hardware type: ' . $hardType . "\r\n");
+	fwrite($newFile, 'Operating System: ' . $opSystem . "\r\n");
+	fwrite($newFile, 'Frequency of Occurence: ' . $frequency . "\r\n");
+	fwrite($newFile, 'Proposed Solutions: ' . $solutions . "\r\n");
+	
+	// close new file 
+	fclose($newFile);	
+}
+?>
+
+</pre></code>
+
+<h4>Edit a Report</h4>
+<pre><code>&ltarticle>
+ &lth2>Software Bug Reports&lt/h2>
+	&lth3 id="title">Edit Report&lt/h3>
+	&ltform action="?" method="post">
+	&ltdiv id="nav">
+		&ltul>
+			&ltli>&lta href="index.php">Index&lt/a>&lt/li>
+			&ltli>&lta href="report_new.php">Create New Report&lt/a>&lt/li>
+			&ltli>&lta class="active" href="report_edit.php">Edit a report&lt/a>&lt/li>
+		&lt/ul>
+	&lt/div>
+       &ltfieldset id="bugReports">
+		Select the bug report you would like to edit: &ltbr />
+		&ltselect name="bugReport">
+		&lt?php
+		// hide error reporting for displaying dropbox correctly
+		error_reporting(0);
+		// creating a dropbox for user to choose which report they wish to edit
+		// read all entries in current directory
+		if ($handle = opendir('.')) {
+			// loop through all the files
+			while (false !== ($file = readdir($handle))) {
+				// strip everything that doesn't end in txt
+				if ($file != "." && $file != ".." && strtolower(substr($file, strrpos($file, '.') + 1)) == 'txt') {
+					// create options in the dropbox with a value of the file the user chose
+					echo '&ltoption value="'.$file.'"';
+					// if the user submits the report form, the current option will be selected when page reloads after submission
+					if ($_POST['bugReport'] == $file) {
+						echo ' selected="selected"';
+					}
+					
+					echo '>'.basename($file)."&lt/option>";
+					echo "&ltbr />";
+				}
+			}
+			// close directory
+		closedir($handle);
+		error_reporting(-1);
+		}		?>
+		&lt/select>
+	&ltbr /> &ltbr />
+	
+		&lt/fieldset>	
+		&ltfieldset id="submitbutton">
+			&ltinput type="submit" id="submitBtn" name="submit" value="Edit report" />
+		&lt/fieldset>
+		&ltbr />&ltbr />
+		&lt?php
+			// if user chooses a report and clicks "edit report"
+			if (isset($_POST['submit'])) {
+				// create variable for requesting the file from the drop box
+				$report = $_POST['bugReport'];
+				// create variable to retrieve all contents from the file chosen by the dropbox
+				$print = file_get_contents($report);
+				// create a text area and print all the information from the file into it
+				echo "&lttextarea id='updateText' name='updateText' rows='7' cols='60'>{$print}&lt/textarea>";
+				// create a new update file button for editting 
+				echo "&ltinput type='submit' name='updateFile' value='Update File'>";
+			}
+			
+			
+			// if the user clicks on "update file"
+			if (isset($_POST['updateFile'])) {
+				// retrieve the file the user chose to edit
+				$report = $_POST['bugReport'];
+				// opens the file
+				$newFile = fopen($report, "w+") or die("Unable to open file!");
+				// retrieves the updated text from the textarea
+				$newText = $_REQUEST['updateText'];
+				// prints the newly updated text from the textarea into the file
+				fwrite($newFile, $newText . "\r\n");
+				echo "{$report} updated!";
+			}
+
+		?>
+	&lt/form>
+&lt/article>
+</pre></code>
+		
+		</div>
+		<!-- End container 10 -->
+	</div>
+	<!-- End container 12 -->
+	<script src="highlight.pack.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+<script>
+(function() {
+
+  init(); //on page load - show first slide, hidethe rest
+
+  function init() {
+
+    parents = document.getElementsByClassName('slideshow-container2');
+
+    for (j = 0; j < parents.length; j++) {
+      var slides = parents[j].getElementsByClassName("mySlides");
+      slides[0].classList.add('active-slide');
+    }
+  }
+
+
+
+//prev/next functionality
+  links = document.querySelectorAll('.slideshow-container2 a');
+
+  for (i = 0; i < links.length; i++) {
+    links[i].onclick = function() {
+      current = this.parentNode;
+
+      var slides = current.getElementsByClassName("mySlides");
+      curr_slide = current.getElementsByClassName('active-slide')[0];
+      curr_slide.classList.remove('active-slide');
+      if (this.className == 'next2') {
+
+        if (curr_slide.nextElementSibling.classList.contains('mySlides')) {
+          curr_slide.nextElementSibling.classList.add('active-slide');
+        } else {
+          slides[0].classList.add('active-slide');
+        }
+
+      }
+
+      if (this.className == 'prev2') {
+
+        if (curr_slide.previousElementSibling) {
+          curr_slide.previousElementSibling.classList.add('active-slide');
+        } else {
+          slides[slides.length - 1].classList.add('active-slide');
+        }
+
+      }
+
+    }
+
+  }
+})();
+</script>
+</body>
+</html>

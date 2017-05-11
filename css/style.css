@@ -1,0 +1,188 @@
+@import url('https://fonts.googleapis.com/css?family=Space+Mono');
+body {
+	background-color: white;
+}
+
+
+.header {
+	background-color: white;
+}
+
+.nav {
+	padding-top: 90px;
+	word-spacing: 20px;
+	
+}
+.nav a {
+	text-decoration: none;
+	color: red;	
+	font-family: "Space Mono";
+}
+
+.nav .active {
+	color: #8C8C8C;
+}
+.nav a:hover {
+	text-decoration: underline;
+}
+
+h1, p, h2, h3 {
+	font-family: "Space Mono";
+}
+
+.active {
+	background-color: white;
+}
+
+.left {
+	float:left;
+}
+.right {
+	float: left;
+}
+
+.wrapper {
+	overflow: hidden;
+}
+.rounded {
+	border-radius: 10%;
+}
+
+
+pre {
+	overflow: auto;
+	max-height: 300px;
+}
+
+
+fieldset {
+  padding: 1em;
+  background: white;
+  text-align: right;
+}
+
+form {
+  background: white;
+  padding: 10px 5px 7px 5px;
+  margin: 0 auto;
+  width: 30em;
+  border: 2px solid black;
+}
+
+input {
+  font-size: 1em;
+  float: left;
+}
+
+#contactinfo input:focus {
+   background: #e3d5ba;
+}
+
+label {
+  display: block;
+  margin: 0.5em 1em 0 0;
+  float: left;
+  clear: left;
+  width: 10em;
+}
+
+#submitsection {
+  padding: 0.5em 0;
+  text-align: center;
+}
+
+#submitBtn {
+   float: none;
+   background: #e3d5ba;
+}
+
+/* Slideshow container */
+ 
+ 
+.slideshow-container {
+  max-width: 500px;
+  position: relative;
+  margin: auto;
+}
+/* Php page */
+.slideshow-container2 {
+  max-width: 800px;
+  position: relative;
+  margin: auto;
+}
+/* Next & previous buttons */
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  margin-top: -22px;
+  padding: 16px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+}
+
+/* php page */
+.prev2, .next2 {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  margin-top: -22px;
+  padding: 16px;
+  color: black;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* php page */
+.next2 {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover, .next:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+/* php page */
+.prev2:hover, .next2:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+.mySlides {
+  display:none;
+}
+.active-slide {
+  display:block;
+}
+
+
+/* Fading animation */
+.fade {
+  -webkit-animation-name: fade;
+  -webkit-animation-duration: 1.5s;
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@-webkit-keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
+}
+
+@keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
+}
+

@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" type="text/css" href="css/960.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/style.css" />
+	<link rel="stylesheet" type="text/css" href="css/obsidian.css" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Adam Boehm Software Portfolia</title>
+</head>
+
+<body>
+<div class="header">
+	<div class="container_12">
+		<div class="grid_5">
+			<h1>ADAM BOEHM</h1>
+			<p>SOFTWARE DEVELOPER</p>
+		</div>
+		<!-- End grid_5 -->
+		<div class="nav grid_7">
+			<a href="index.html">HOME</a> / <a class="active" href="java.html">JAVA</a> / <a href="javascript.html">JAVASCRIPT</a> / <a href="php.html">PHP</a> / <a href="sql.html">SQL</a>
+		</div>
+		<!-- End grid 7 -->
+	</div>
+	<!-- End container 12 -->
+</div>
+<!-- End header -->
+<hr>
+	<div class="container_12">
+		<div class="grid_10">
+			<h2>Java Battleship Game</h2>
+			<p>This Battleship game was my final project in my CSIS 222 Object Oriented Programming with Java. You start the game by choosing your board size (1, 2 or 3). Whichever difficulty you choose, 
+			the gameboard will be dynamically created to match the board size. <br /><br />
+			Then the game starts. You first choose which row you want to attack, then the column. These attack choices are then loaded into a two dimensional array that is already populated with either
+			empty water, or ships. Each difficulty will have five ships randomly placed inside that two dimensional array with values depending on the type of ship (Destroyer, Aircraft Carrier, etc.). If your 
+			attack choices land on a value inside the array that is populated by a ship, it registers a hit and the board changes from water (~) to a hit (X) and informs you what ship you have hit.<br /><br />
+			You win if you sink all the ships before your missles run out and you lose if you do not sink all of the ships or run out of missles.
+			</p> 
+			<!-- Start slideshow-container -->
+			<div class="slideshow-container">
+				<div class="mySlides fade">
+					<img src="img/Battleship_start.png" style="width:100%">
+				</div>
+				<div class="mySlides fade">
+					<img src="img/Battleship_start2.png" style="width:100%">
+				</div>
+				<div class="mySlides fade">
+					<img src="img/Battleship_start3.png" style="width:100%">
+				</div>
+				<div class="mySlides fade">
+					<img src="img/Battleship_start4.png" style="width:100%">
+				</div>
+				<div class="mySlides fade">
+					<img src="img/Battleship_start5.png" style="width:100%">
+				</div>
+				<a class="prev">&#10094;</a>
+				<a class="next">&#10095;</a>
+			</div>
+		<!-- End slideshow-container -->
+		</div>
+		<!-- End container 10 -->	
+		<div class="grid_10">
+			<!-- <script src="https://gist.github.com/ABoehm4/7699912daa700d1f1cc13c6a56caf460.js"></script>
+			<script src="https://gist.github.com/ABoehm4/986d66fad9086e860eaaa7463cf74995.js"></script>
+			<script src="https://gist.github.com/ABoehm4/ebbad225ef5276822821a2326890a13d.js"></script> -->
+			<h2>Source Code</h2>
+			<h4>battleship.java</h4>
+			<pre><code>package battleship;
+
+
+public class battleship {
+	public static void main(String[] args) {
+		// creating a new object of actiongame.java
+	actiongame action = new actiongame(); 
+	
+	action.startGame(); // call actiongame.java and start the game
+	action.playGame(); // call actiongame.java and play the game
+	}
+	
+}</pre></code>
+			<h4>actiongame.java</h4>
+			<pre><code>package battleship;
+import java.util.Scanner;
+
+
+public class actiongame  {
+
+	gameboard gameboard = new gameboard();
+	Scanner kb = new Scanner(System.in);
+	private int hits = 0;
+	private int turns = 0;
+
+	
+	// Get the logo, set difficulty, place the ships, then print the board
+	protected void startGame() {
+		gameboard.getLogo();
+		gameboard.setDiff(); 
+		gameboard.placeShips(); 
+		gameboard.printBoard(); 
+	}
+	
+	protected void playGame() {
+		boolean gameOver; 
+		
+		// the following code will execute over and over until gameOver is set to true (when the game ends)
+		do {
+		turns++;	
+		gameOver = false; 
+		
+		System.out.print("\n\nWhat row do you want to attack? (example: A or b): ");
+		String input = kb.next().toUpperCase();
+		
+		// The while loop will validate that the player entered a valid character
+		while (!validate(input, gameboard.getDifficulty()))  {
+			System.out.println("\nMake sure you are entering a valid single letter!");
+			System.out.print("\nWhat row do you want to attack? (example: A or b): ");
+			input = kb.next();
+		}
+		char charInput = input.charAt(0); 
+		// passes the character input to getNumber() to convert the letter to a number for the board[][] array
+		int row = getNumber(charInput); 
+		
+		// determine the column the player wants to attack
+		System.out.print("What column do you want to attack? (example: 1 or 5): ");
+		String column = kb.next().toUpperCase();
+		
+		while (!validNumber(column, gameboard.getDifficulty())) {
+				System.out.println("\nMake sure you are entering a valid NUMBER!\n");
+				System.out.print("What column do you want to attack? (example: 1 or 5): ");
+				column = kb.next();
+		}
+				
+		int col = Integer.parseInt(column) - 1;	
+		fire(row, col);
+		
+		// pass the converted row and column to fire method to attack the board		
+		
+		 
+		gameboard.useMissiles();
+		
+		System.out.printf("%nYour hit accuracy is %.2f%%", getAccuracy(hits, turns));
+		gameboard.printBoard();
+		// once the int sunk value hits 0, all ships have been sunk, the player wins, call gameOverWin() from gameboard.java
+		if (gameboard.shipsAlive == 0) {
+			gameboard.gameOverWin();
+			gameOver = true;
+		}
+		// or if they have used all their missiles, the player loses, call gameOverLoss() from gameboard.java
+		else if (gameboard.getMissiles() == 0) {
+			gameboard.gameOverLoss();
+			gameOver = true;
+		}
+		} while(!gameOver); 
+	}
+	
+	
+	// The following code will determine what the player hit with their choice of attack
+	private void fire(int row, int col) {
+		// if the players attack landed on a -3 value, they hit the AIRCRAFT_CARRIER
+		if (gameboard.board[row][col] == -3){
+			// Create an int for ship sinking. Each time the players attack lands on a -3 value, subtract 1 from the ships size
+			// once the size hits 1, the ship is sunk
+			int sunk = gameboard.ships[0].size--;
+			hits++;
+			System.out.printf("%nYou have hit the %s", gameboard.ships[0].name);
+			// change the value where the player attacked to a 1, meaning a HIT
+			gameboard.board[row][col] = 1;
+			if (sunk == 1) {
+				System.out.printf("%n****** You have sunk the %s Aircraft Carrier.", gameboard.ships[0].name);
+				gameboard.shipsAlive--;
+			}
+		}
+		// if the players attack landed on a -4 value, they hit the BATTLESHIP
+		else if (gameboard.board[row][col] == -4) {
+			int sunk = gameboard.ships[1].size--;
+			hits++;
+			System.out.printf("%nYou have hit the %s", gameboard.ships[1].name);
+			gameboard.board[row][col] = 1;
+			if (sunk == 1) {
+				System.out.printf("%n****** You have sunk the %s Battleship.", gameboard.ships[1].name);
+				gameboard.shipsAlive--;
+			}
+		}
+		// if the players attack landed on a -5 value, they hit the DESTROYER
+		else if (gameboard.board[row][col] == -5) {
+			int sunk = gameboard.ships[2].size--;
+			hits++;
+			System.out.printf("%nYou have hit the %s", gameboard.ships[2].name);
+			gameboard.board[row][col] = 1;
+			if (sunk == 1) {
+				System.out.printf("%n****** You have sunk the %s Destroyer.", gameboard.ships[2].name);
+				gameboard.shipsAlive--;
+			}
+		}
+		// if the players attack landed on a -6 value, they hit the SUBMARINE
+		else if (gameboard.board[row][col] == -6) {
+			int sunk = gameboard.ships[3].size--;
+			hits++;
+			System.out.printf("%nYou have hit the %s", gameboard.ships[3].name);
+			gameboard.board[row][col] = 1;
+			if (sunk == 1) {
+				System.out.printf("%n****** You have sunk the %s Submarine.", gameboard.ships[3].name);
+				gameboard.shipsAlive--;
+			}
+		}
+		// if the players attack landed on a -7 value, they hit the PATROL_BOAT
+		else if (gameboard.board[row][col] == -7) {
+			int sunk = gameboard.ships[4].size--;
+			hits++;
+			System.out.printf("%nYou have hit the %s", gameboard.ships[4].name);
+			gameboard.board[row][col] = 1;
+			if (sunk == 1) {
+				System.out.printf("%n****** You have sunk the %s Patrol Boat.", gameboard.ships[4].name);
+				gameboard.shipsAlive--;
+			}
+		}
+		
+		else if (gameboard.board[row][col] == 0 || gameboard.board[row][col] == 1) {
+			System.out.print("\nYou already attacked there genius. Great job wasting a missile!\n");
+		}
+		
+		// if the players attack hit anything other than the values indicated above, then they missed hitting a ship
+		else {
+			System.out.print("You hit NOTHING! TRY AGAIN\n");
+			// assign the value of the board where the player attacked to 0, meaning a miss
+			gameboard.board[row][col] = 0;
+		}
+		
+		
+		
+	
+	}
+	
+	// divide how many hits by how many turns have happened, multiplied by 100 to get proper accuracy. (ie >1)
+	private double getAccuracy(double hits, double turns) {
+		double accuracy = (hits / turns) * 100;
+		return accuracy;
+	}
+	
+
+	// validate user entered a valid input for column
+	private static boolean validNumber(String column, int diff) {
+		boolean isValid = false;
+		// if player entered a letter A-Z, return invalid
+		if (column.matches("^[a-zA-Z]*$"))
+			isValid = false;
+		// if they entered a number, does it fall within bounds of the board
+		else {
+			int col = Integer.parseInt(column);
+		
+			if (diff == 1) {
+				if (col >= 1 && col <= 6)
+					isValid = true;
+			}
+			else if (diff == 2) {
+				if (col >= 1 && col <= 9)
+					isValid = true;
+			}
+			else if (diff == 3) {
+				if (col >= 1 && col <= 12)
+					isValid = true;
+			}
+		}
+		return isValid;
+	}
+	
+	
+	
+	
+	// validate player input a single character within bounds
+	private static boolean validate(String s, int diff) {
+		if (s.length() > 1 || s.length() == 0)
+			return false;
+		if (diff == 1) {
+			if (!s.matches("^[a-fA-F]"))
+				return false;
+		}
+		else if (diff == 2) {
+			if (!s.matches("^[a-iA-I]"))
+				return false;
+		}
+		
+		else if (diff == 3) {
+			if (!s.matches("^[a-lA-L]")) 
+				return false;
+		}
+		return true;
+	}
+	
+	
+	// change the character input for first user attack prompt to a number for the board[][] array
+	private int getNumber(char input) {
+		int row = 0;
+		
+		switch(input){
+		case 'A':
+			row = 0;
+			break;
+		case 'B':
+			row = 1;
+			break;
+		case 'C':
+			row = 2;
+			break;
+		case 'D':
+			row = 3;
+			break;
+		case 'E':
+			row = 4;
+			break;
+		case 'F':
+			row = 5;
+			break;
+		case 'G':
+			row = 6;
+			break;
+		case 'H':
+			row = 7;
+			break;
+		case 'I':
+			row = 8;
+			break;
+		case 'J':
+			row = 9;
+			break;
+		case 'K':
+			row = 10;
+			break;
+		case 'L':
+			row = 11;
+			break;
+		
+		}
+		
+		
+		return row;
+	}
+}</pre></code>
+<h4>gameboard.java</h2>
+<pre><code>package battleship;
+
+import java.util.Random;
+import java.util.Scanner;
+
+public class gameboard {
+	Scanner kb = new Scanner(System.in);
+	Random r = new Random();
+	
+	int board[][]; // creating a 2d int array for printing of the game board
+	shipInfo[] ships = new shipInfo[5]; // creating an array of 5 for the 5 ships
+	protected int BOARD_SIZE;
+	protected int missiles;
+	protected int shipsAlive = 5;
+	protected int difficulty;
+
+	
+	// getting difficulty settings from the player
+	protected void setDiff() {
+		
+		System.out.println("You have three difficulties to choose from");
+		System.out.println("   LEVEL        BOARD SIZE        MISSLES");
+		System.out.println("1. Beginner        6x6               30   ");
+		System.out.println("2. Standard        9x9               50   ");
+		System.out.println("3. Advanced       12x12              75   ");
+		
+		System.out.print("Select your board size by entering the number 1, 2, or 3:  ");
+		// this will determine if the user entered anything other than an integer number
+		while (!kb.hasNextInt()) {
+			System.out.println("\nMake sure you are entering a NUMBER!\n");
+			System.out.print("Select your board size by entering the number 1, 2, or 3:  ");
+			kb.next();
+		}
+		difficulty = kb.nextInt();
+		// if they entered a value other than 1, 2, or 3 for the game difficulty, execute the while loop
+		while(difficulty != 1 && difficulty != 2 && difficulty != 3) {
+			System.out.println("\nYou have entered an invalid difficulty entry\n");
+			System.out.print("Select your board size by entering the number 1, 2, or 3:  ");
+			difficulty = kb.nextInt();	
+		}
+		
+		// If they chose 1 = BEGINNER difficulty
+		if (difficulty == 1) {
+			System.out.print("\nYou have chosen beginner. What a scrub!");
+			BOARD_SIZE = 6; // board size will be 6x6
+			missiles = 30; // they get 30 missiles
+		}
+		// If they chose 2 = STANDARD difficulty
+		else if (difficulty == 2) {
+			System.out.print("\nYou have chosen standard. Just a mediocre life.");
+			BOARD_SIZE = 9; // board size will be 9x9
+			missiles = 50; // they get 50 missiles
+		}
+		// If they chose 3 = ADVANCED DIFFICULTY	
+		else if (difficulty == 3) {
+			System.out.print("\nYou have chosen advanced. You must be confident!");
+			BOARD_SIZE = 12; // board size will be 12x12
+			missiles = 75; // they get 75 missiles
+		}
+		setBoardSize(); // call setBoardSize() method below to create the 2d int array based on the difficulty the player chose
+		fillBoard(); // call fillBoard() method below to initialize the 2d array
+		System.out.printf("%nGameboard is set to %dx%d%n", getBoardSize(), getBoardSize());
+	}
+	
+	protected int getBoardSize() {
+		return BOARD_SIZE;
+	}
+	
+	protected int getMissiles() {
+		return missiles;
+	}
+	
+	protected int useMissiles() {
+		return missiles--;
+	}
+	
+	protected int getDifficulty() {
+		return difficulty;
+	}
+
+	// setting the board size to what the player wanted, 6, 9 or 12
+	private void setBoardSize() {
+		board = new int[BOARD_SIZE][BOARD_SIZE];
+	}
+	
+	// initializing the whole board to -1
+	private void fillBoard() {
+		// initializing the board array to -1
+		// -1 will equal empty space, aka water on the battleship board
+		for(int i = 0; i < getBoardSize(); i++) {
+			for (int j = 0; j < getBoardSize(); j++) {
+				board[i][j] = -1;
+			}
+		}
+	}
+	
+	// printing of the board
+	protected void printBoard() {
+		final char water = '~'; 
+		final char miss = '*'; 
+		final char hit = 'X';	
+		
+		
+		
+		System.out.println("\n----------------------------------------");
+
+		System.out.printf("You have %d missiles left%n", getMissiles());
+		System.out.printf("There are %d ship(s) still alive%n", shipsAlive);
+
+		// print out empty space at top left of board
+		System.out.print("\n  ");
+		
+		// print first column going right
+		for (int i = 0; i < getBoardSize(); i++) {
+			System.out.printf("%4d", i+1);	
+		}
+		
+		// start of main loop for printing board
+		for (int i = 0; i < getBoardSize(); i++) {
+			System.out.print("\n");
+			// printing of the letters for board legend
+			System.out.printf("%3c", getLetter(i+1));
+			
+			for (int j = 0; j < getBoardSize(); j++) {
+				if (board[i][j] == -1 || board[i][j] == -3 || board[i][j] == -4 || board[i][j] == -5 || board[i][j] == -6 || board[i][j] == -7)
+					System.out.printf("%3c", water);
+				if (board[i][j] == 0)
+					System.out.printf("%3c", miss);
+				if (board[i][j] == 1)
+					System.out.printf("%3c", hit);
+					
+			
+				// FOR TEST PRINTING ONLY, UNCOMMENT THIS SECTION TO SEE SHIP PLACEMENT (OR CHEATING)
+				//
+				/*if (board[i][j] == -3)
+					System.out.printf("%3s", ships[0].icon);
+				if (board[i][j] == -4)
+					System.out.printf("%3s", ships[1].icon);
+				if (board[i][j] == -5)
+					System.out.printf("%3s", ships[2].icon);
+				if (board[i][j] == -6)
+					System.out.printf("%3s", ships[3].icon);
+				if (board[i][j] == -7)
+					System.out.printf("%3s", ships[4].icon); */
+				
+				System.out.print("|");
+			}
+		}
+	}
+	
+	
+	protected class shipInfo {
+		public String name = "";
+		public String icon = "";
+		public int size = 0;
+	}
+	
+	// Used inspiration from Nickwell in class for createShips()
+	protected void createShips() {
+		ships[0] = new shipInfo();
+		ships[1] = new shipInfo();
+		ships[2] = new shipInfo();
+		ships[3] = new shipInfo();
+		ships[4] = new shipInfo();
+		
+		ships[0].name = "USS Enterprise";
+		ships[1].name = "USS Iowa";
+		ships[2].name = "USS Arlington";
+		ships[3].name = "USS Alexandria";
+		ships[4].name = "USS Flagstaff";
+		
+		ships[0].size = 5; // Aircraft Carrier is 5 spaces long
+		ships[1].size = 4; // Battleship is 4 spaces long
+		ships[2].size = 4; // Destroyer is 4 spaces long
+		ships[3].size = 3; // Submarine is 3 spaces long
+		ships[4].size = 2; // Patrol Boat is 2 spaces long
+		
+		// THE FOLLOWING WILL BE COMMENTED OUT FOR FINAL GAME
+		// Uncomment the ships[].icon if you want to see the icons print with the board game (for cheating)
+		/*ships[0].icon = "A"; // A for Aircraft Carrier
+		ships[1].icon = "B"; // B for Battleship
+		ships[2].icon = "D"; // D for Destroyer
+		ships[3].icon = "S"; // S for Submarine
+		ships[4].icon = "P"; // P for Patrol Boat */
+
+	}
+	
+	protected void placeShips() {
+		createShips(); // when placeShip() is called in actiongame.java, createShips() will execute and create the ships for the board
+		int size = getBoardSize();	 // assigning the board size to an int value for easier output
+		int shipIcon = -3; // initializing a value to -3 for placement of ships. A counter for -- is at the end of the placeShips() method which will subtract a number
+		
+		// The for loop will execute 5 times, the ships[] array is 5 elements long
+		for (int i = 0; i < ships.length; i++) {
+			// initialize a boolean value to false for determing if the ship is placed on the board
+			boolean shipPlaced = false;
+		// since the boolean value is set to false, the following code will execute UNTIL the ship is placed on the board, then it will move to the next iteration of the for loop
+		while (!shipPlaced) {
+			// create a boolean value for determining directional placement of the ship and randomize between true and false
+			// TRUE WILL BE HORIZONTAL
+			// FALSE WILL BE VERTICAL
+			boolean placeHorizontal = r.nextBoolean();
+			// create and randomize two int values based on the size of the gameboard (6, 9 or 12), these two values will be passed to the board[][] array
+			// to determine the starting point of the ship placement
+			int row = r.nextInt(size);
+			int col = r.nextInt(size);
+			
+			// if the randomized values land on anything BUT -1 (empty space, water), restart the while (!shipPlaced) loop
+			if (board[row][col] != -1)
+				continue;
+
+			// if the boolean value randomized to true, execute the next code
+			if (placeHorizontal) { // HORIZONTAL PLACEMENT
+				// if the randomized value for row PLUS the ships size is greater than the length of the board
+				// continue to the back of the while loop and start again
+				if (row + ships[i].size > size) {
+					continue;
+				}
+				// if there is enough space to place the ship on the board and not go OFF, the next code will execute
+				else {
+					// initialize spaceFree boolean to true, spaceFree will determine if there is another ship in the way of placement
+					// if there is another ship in the way, the code will restart at the top of the while loop and try again
+					boolean spaceFree = true;
+					// for loop will run for the length of the ship (example 5 times for the aircraft carrier)
+					for (int j = 0; j < ships[i].size; j++) {
+						// testing if each randomized row + 1 and col are equal to -1 (empty space, water)
+						if (board[row+j][col] != -1) {
+							spaceFree = false;
+						}
+					}
+					
+
+			    if (!spaceFree)
+			      continue; // if the previous for loop determined there is a ship in the way, restart the while loop and try again
+			    
+			 // The code will only get to this point if the ship will not go off the board AND there is not another ship in the way of current ship
+			 // The following code places the ship on the board
+			    for (int j = 0; j < ships[i].size; j++) {
+			    	// shipIcon was initialized to -3 (aircraft carrier), and a -- counter will subtract to -4 then -5 and so on to change the value of that
+			    	// position to match that of the ship
+					board[row + j][col] = shipIcon;
+				}
+			    // since the ship passed all tests and was finally placed, change shipPlaced to true so the code moves to the next iteration of the for loop to place the next ship
+			    shipPlaced = true;
+			  } 
+			}
+			
+			// if the boolean value for placeHorizontal is anything but true (false) then the following block of code will execute
+			else { // VERTICALLY	   
+				// code executes the exact same as the placeHorizontal, except it tests for vertical values instead of horizontal ones
+				if (col + ships[i].size > size) {
+					continue;
+				}
+
+				else {
+					boolean spaceFree = true;
+
+			    for (int j = 0; j < ships[i].size; j++) {
+			      if (board[row][col+j] != -1)
+			      spaceFree = false;
+			    }
+
+			    if (!spaceFree)
+			      continue; 
+
+
+				for (int j = 0; j < ships[i].size; j++) {	
+					board[row][col + j] = shipIcon;
+				}
+			  
+			    shipPlaced = true;
+				}
+			  }
+			}
+		// shipIcon starts at -3, assigns the number to that specific board[row][column] per ship, then subtracts to -4 for the next
+		// iteration of the for loop
+		// -3 = AIRCRAFT_CARRIER
+		// -4 = BATTLESHIP
+		// -5 = DESTROYER
+		// -6 = SUBMARINE
+		// -7 = PATROL BOAT
+		shipIcon--;
+		}	
+	
+	}
+		
+	protected void gameOverWin() {
+		System.out.println("\n\n");
+		System.out.println("Congratulations! You have sunk all the enemy ships.");
+		System.out.println("----------------------------------------------------");
+		System.out.println("|                                                  |");
+		System.out.println("|                   YOU WIN!!                      |");
+		System.out.println("|                                                  |");
+		System.out.println("----------------------------------------------------");
+		
+	}
+	
+	protected void gameOverLoss() {
+		System.out.println("\n\n");
+
+		System.out.println("----------------------------------------------------");
+		System.out.println("|                                                  |");
+		System.out.println("|                   YOU LOSE!!                     |");
+		System.out.println("|                     HA HA                        |");
+		System.out.println("----------------------------------------------------");
+	}
+	
+		
+	// converts the numbers to letters (for the first column going down)
+	private char getLetter(int i){
+		  return (char) (i + 64);
+		}
+	
+	protected void getLogo() {
+		System.out.println("----------------------------------------------------");
+		System.out.println("|                                                  |");
+		System.out.println("|             WELCOME TO BATTLESHIP                |");
+		System.out.println("|                   WITH JAVA!                     |");
+		System.out.println("|                                                  |");
+		System.out.println("----------------------------------------------------");
+	
+		
+	}
+	
+	
+}</code></pre>
+		</div>
+		<!-- End grid 10 -->
+		<!-- Start grid_10 -->
+		
+		<div class="grid_10">
+		<br /> <br /><br /> <br />
+		<h2>Java Bowling Game</h2>
+		<p>
+		This bowling game is created by using three arrays. One for the first roll in the frame, one for the second roll in the frame, and one for calculating the final score at the end.
+		The scores from each frame are loaded into the respective array depending on if the bowler rolls a strike, spare, gutter, or total pins knocked down do not equal 10. This code
+		will continue until frame 10 since frame 10 is a special case and may contain 3 bowls. Once the bowler completes the game, the scores are added up from each element in both arrays
+		and printed into a score card for easy readability.
+		</p>
+		<div class="slideshow-container">
+			<div class="mySlides fade">
+				<img src="img/Bowling1.png" style="width:100%">
+			</div>
+			<div class="mySlides fade">
+				<img src="img/Bowling2.png" style="width:100%">
+			</div>
+			<div class="mySlides fade">
+				<img src="img/Bowling3.png" style="width:100%">
+			</div>
+			<a class="prev" >&#10094;</a>
+			<a class="next">&#10095;</a>
+		</div>
+		<pre><code>import java.util.Scanner;
+
+public class AdamBoehm_HW02 {
+
+	public static void main(String[] args) {
+		Scanner input = new Scanner(System.in);
+		
+		String[] roll1 = new String[10]; // 10 element array for loading first bowl
+		String[] roll2 = new String[10]; // 10 element array for loading second bowl
+		int[] framescore  = new int[10]; // 10 element array for calculating 1 - 10 frames score
+		
+		// CONSTAT VARIABLES
+		int MAXPINS = 10;
+				
+		
+		// DECLARED VARIABLES
+		String bonusball1 = ""; // string for potential 10th frame bonus ball
+		int pinsleft = 0;
+		int runtotal = 0;
+						
+		System.out.println("*****************************************");
+		System.out.println("*\tWelcome to Bowling with Java!\t*");
+		System.out.println("*\t    Enter X for Strike\t\t*");
+		System.out.println("*\t    Enter / for Spare\t\t*");
+		System.out.println("*****************************************");
+			
+		
+		// VALUES FOR TESTING PROGRAM
+		// X 7 / 7 2 9 / x x x 2 3 6 / 7 / 3
+		// X 9 / 5 / 7 2 x x x 9 0 8 / 9 / x
+		// X X X X X X X X X X X X 
+		// 10 10 10 10 10 10 10 10 10 10 10 10
+			
+		
+		//Start of loop for printing frame 1-10
+		//Loop will prompt bowler for input of their scores for each frame
+		for (int i = 0; i < framescore.length; i++)
+		{
+			if (i < 9) // if frame is 1 - 9
+			{
+				System.out.printf("%n---Frame %d---", i+1); // will print frame 1 - 10
+				System.out.print("\nEnter score for first  bowl: ");
+				roll1[i] = input.next().toUpperCase(); // takes string input for first bowl
+			
+			if (roll1[i].equals("X") || Integer.parseInt(roll1[i]) == 10) // if first bowl is strike
+				System.out.println("\tNice Strike!"); // print
+			
+			else 
+			{
+				pinsleft = MAXPINS - Integer.parseInt(roll1[i]); // calculating pins still standing after first bowl
+				System.out.println("   " + pinsleft + " pins still standing");
+				System.out.print("Enter score for second bowl: ");
+				roll2[i] = input.next().toUpperCase();
+				if (roll2[i].equals("/") || Integer.parseInt(roll1[i]) + Integer.parseInt(roll2[i]) == 10) // if bowler types / or bowl 1 + bowl 2 = 10
+					System.out.println("\tNice Spare!"); // print
+			}
+			}
+			
+			if (i != 9) // if it's frame 1 - 9, do not execute the rest of the for loop, reset to top
+				continue;
+			
+			// Next is prompting for input for the 10th frame
+			// 10th frame is special because there can be up to 3 rolls
+			else  
+			{ 
+				System.out.printf("%n---Frame %d---", i+1); // will print frame 10
+				System.out.print("\nEnter score for first  bowl: ");
+				roll1[i] = input.next().toUpperCase(); 
+				
+				if (roll1[i].equals("X") || Integer.parseInt(roll1[i]) == 10) // if first bowl in frame 10 is a strike
+				{  
+					System.out.println("\tNice Strike!"); // print
+					System.out.print("Enter score for second bowl: ");
+					roll2[i] = input.next().toUpperCase();
+					
+					if (roll2[i].equals("X") || Integer.parseInt(roll2[i]) == 10) // if second bowl in frame 10 is a strike
+					{ 
+						System.out.println("\tNice Strike!"); // print
+						System.out.print("Enter score for  third bowl: ");
+						bonusball1 = input.next().toUpperCase();
+					} // end statement if second bowl in frame 10 is a strike
+					else
+					{ // if second bowl in frame 10 is NOT a strike
+						System.out.print("Enter score for  third bowl: ");
+						bonusball1 = input.next().toUpperCase();
+					} // end else statement
+							
+				} // end if statement if first bowl in frame 10 is a strike
+				else // if first bowl in frame 10 is NOT a strike
+				{ 
+					pinsleft = MAXPINS - Integer.parseInt(roll1[i]);
+					System.out.println("   " + pinsleft + " pins still standing");
+					System.out.print("Enter score for second bowl: ");
+					roll2[i] = input.next().toUpperCase();
+					if (roll2[i].equals("/") || Integer.parseInt(roll1[i]) + Integer.parseInt(roll2[i]) == 10) // if second bowl in frame 10 is a spare
+					{ 
+						System.out.println("\tNice Spare!"); // print
+						System.out.print("Enter score for  third bowl: ");
+						bonusball1 = input.next().toUpperCase();
+					} // end if statement if second bowl in frame 10 is a spare
+					else  // if second bowl in frame 10 is NOT a spare
+						break; // break out of loop completely because third roll is not needed
+				}// end else statement for if frame 10 is NOT a strike
+					
+				} // end else statement for if (i != 9)
+				
+			} // end for loop for prompting bowler for input
+			input.close(); // closing scanner input
+			
+		//
+		// Calculations for final output is next
+		//
+		// 
+		for (int i = 0; i < framescore.length; i++){
+			int score = 0; // initializing score to 0 for each frame
+			
+			if (i < 8)// calculating frame 1 - 8
+			{ 
+				if (roll1[i].equals("X") || Integer.parseInt(roll1[i]) == 10) // if first roll is a strike, assign 10 points
+				{ 
+					score += 10;
+					if (roll1[i+1].equals("X") || Integer.parseInt(roll1[i+1]) == 10) // if first roll in next frame is a strike, assign 10 more points to current frame
+					{ 
+						score += 10;
+						if (roll1[i+2].equals("X") || Integer.parseInt(roll1[i+2]) == 10) // if first roll in third frame is a strike, assign 10 more points to current frame
+							score += 10;		
+						else
+							score += Integer.parseInt(roll1[i+2]);
+					} // end if statement for third strike roll
+					else // if after first strike, next bowl is not a strike
+						if (roll2[i+1].equals("/") || Integer.parseInt(roll2[i+1]) == 10) // if second bowl after strike is a spare, assign 10 points to current frame
+								score += 10;
+						else // else add integer value of roll 1 and roll 2 to current frame
+							score += (Integer.parseInt(roll1[i+1]) + Integer.parseInt(roll2[i+1]));
+				}
+				else // else if first roll is NOT a strike
+				
+					if (roll2[i].equals("/") || Integer.parseInt(roll2[i]) == 10)// if second roll is a spare, add 10 points
+					{ 
+						score += 10;
+							if (roll1[i+1].equals("X") || Integer.parseInt(roll1[i+1]) == 10) // if first roll in next frame is a strike, add 10 points
+								score += 10;
+							else if (!roll1[i+1].equals("X") || Integer.parseInt(roll1[i+1]) != 10)
+								score += Integer.parseInt(roll1[i+1]);
+							else
+								continue;
+					}
+					else 
+						score += Integer.parseInt(roll1[i]) + Integer.parseInt(roll2[i]);
+			
+			} // end if statement for if i < 8
+			//
+			// Next is calculating the 9th and 10th frame with potential bonus ball
+			//
+			//
+			else
+				if (i == 8) // calculating 9th frame
+				{
+					if (roll1[i].equals("X") || Integer.parseInt(roll1[i]) == 10) // if first bowl in 9th frame is a strike, add 10 points
+					{
+						score += 10;
+							if (roll1[i+1].equals("X") || Integer.parseInt(roll1[i+1]) == 10) // if first bowl in 10th frame is a strike, add 10 points
+								score += 10;
+							if (roll2[i+1].equals("X") || Integer.parseInt(roll2[i+1]) == 10) // if second bowl in 10th frame is a strike, add 10 more points
+								score += 10;
+							else // if first bowl in 10th frame is NOT a strike
+							{
+								if (roll2[i+1].equals("/") || Integer.parseInt(roll1[i+1]) + Integer.parseInt(roll2[i+1]) == 10) // if second bowl in 10th frame is a spare
+									score += 10;
+								else
+									score += Integer.parseInt(roll1[i+1]) + Integer.parseInt(roll2[i+1]);
+							}
+						
+					}
+					else // if first bowl in 9th frame is NOT a strike
+						if (roll2[i].equals("/") || Integer.parseInt(roll1[i]) + Integer.parseInt(roll2[i]) == 10) // if roll 2 in 9th frame is a spare, add 10 points
+						{
+							score += 10;
+							if (roll1[i+1].equals("X") || Integer.parseInt(roll1[i+1]) == 10) // if roll 1 in 10th frame is a strike, add 10 more points
+								score += 10;
+							else // else add integer value of roll 1 in frame 10
+								score += Integer.parseInt(roll1[i+1]);
+						}
+						else // else if roll 1 and roll 2 in frame 9 are not strikes or spare
+							score = Integer.parseInt(roll1[i]) + Integer.parseInt(roll2[i]);
+				} // end calculations for frame 9
+				
+				else  // Calculating 10th frame
+				{
+					if (roll1[i].equals("X") || Integer.parseInt(roll1[i]) == 10)// if first throw on frame 10 is a strike, add 10 points
+					{	  
+						score += 10;
+						if (roll2[i].equals("X") || Integer.parseInt(roll2[i]) == 10) // if second throw on frame 10 is a strike, add 10 more points
+							score += 10;
+						if (bonusball1.equals("X") || Integer.parseInt(bonusball1) == 10) // if bonus ball on frame 10 is a strike, add 10 more points
+							score += 10;
+						else // if second throw on frame 10 is NOT a strike
+						{
+							if (bonusball1.equals("/") || Integer.parseInt(roll2[i]) + Integer.parseInt(bonusball1) == 10) // if bonus ball = spare or roll 2 + bonus ball = 10, add 10 points
+								score += 10;
+							else // else if first throw = strike, second throw != strike, and bonus ball != spare
+								score += Integer.parseInt(roll2[i]) + Integer.parseInt(bonusball1);
+						}		
+						
+					} // end if statement if first throw on frame 10 is a strike
+			
+					else // if first throw on frame 10 is NOT a strike
+						if (roll2[i].equals("/") || Integer.parseInt(roll1[i]) + Integer.parseInt(roll2[i]) == 10) // if roll 2 is a spare, score is 10
+						{
+							score += 10;
+							if (bonusball1.equals("X") || Integer.parseInt(bonusball1) == 10) // if bonus ball is a strike, add 10 points
+								score += 10;
+							else
+								score += Integer.parseInt(bonusball1);		
+						}
+						else
+							score = Integer.parseInt(roll1[i]) + Integer.parseInt(roll2[i]);	
+			
+				}
+			framescore[i] = score; // assigning the score to framescore[i] to print out in score card
+		}
+		
+		
+		// Test printing for all values input into both arrays of roll1[10] and roll2[10] + bonusball1
+		// to ensure proper values have been input before printing
+		/*for (int i = 0; i < framescore.length; i++){
+			System.out.printf("%n%nFrame: %d", i+1);
+			System.out.printf("%nRoll1: %s", roll1[i]);
+			System.out.printf("%nRoll2: %s", roll2[i]);
+			if (i == 9)
+				System.out.printf("%nBonusball: %s", bonusball1);
+		}*/
+		
+		// SCORECARD OUTPUT
+		// Output of Frames, Results of each frame (what was bowled), Score of each frame, and running total is next
+		String frameprint = "Frame:";
+		String resultprint = "Result:";
+		String framescoreprint = "Frame Score:";
+		String runtotalprint = "Running Total:";
+		char STRIKE = 'X'; // char value to print X for results output if bowler enters X or 10 as their value
+		char SPARE = '/'; // char value to print / for results output if bowler enters / or roll1 + roll2 = 10
+		
+		System.out.println("\n\n\t\t\t\t ***** SCORE CARD *****");
+		System.out.println("\n_______________________________________________________________________________________");
+		System.out.printf("%-18s", frameprint);
+		for (int i = 0; i < framescore.length; i++){ // printing out frames 1 - 10 on score card
+			System.out.printf("%-7d", i+1);}
+		System.out.println("\n_______________________________________________________________________________________");
+		System.out.printf("%-18s", resultprint);
+		for (int i = 0; i < framescore.length; i++){
+			if (i < 9)
+			{
+				if (roll1[i].equals("X") || Integer.parseInt(roll1[i]) == 10) // if first bowl was a strike, print X
+					System.out.printf("%-7c", STRIKE); // print an X
+				else  if (!roll1[i].equals("X") || Integer.parseInt(roll1[i]) == 10) // if first bowl was NOT a strike
+				{ 
+					System.out.printf("%-1s ", roll1[i]); // print first bowl		
+						if (roll2[i].equals("/") || Integer.parseInt(roll1[i]) + Integer.parseInt(roll2[i]) == 10) // if second bowl was a spare
+							System.out.printf("%-5c", SPARE); // print a /
+						else
+							System.out.printf("%-5s", roll2[i]); // else if second bowl is not a spare, print second bowl
+				} // end else if statement for if first bowl was NOT a strike
+			} // end if statement for if i < 9
+			if (i != 9)
+				continue;
+			if (i == 9) // printing of the 10th frame on score card
+			{
+				if (roll1[i].equals("X") || Integer.parseInt(roll1[i]) == 10) // if first bowl in frame 10 is a strike
+				{ 
+					System.out.printf("%-2c", STRIKE);
+					if (roll2[i].equals("X") || Integer.parseInt(roll2[i]) == 10) // if second bowl in frame 10 is a strike
+						{ 
+						System.out.printf("%-2c", STRIKE);
+							if (bonusball1.equals("X") || Integer.parseInt(bonusball1) == 10) // if third bowl in frame 10 is a strike
+								System.out.printf("%-2c", STRIKE);
+							else // else if third bowl in frame 10 is NOT a strike, print the value of bonus ball
+								System.out.printf("%-2s", bonusball1);
+						} 
+					else // else if first bowl in frame 10 is a strike and second is NOT a strike
+						{ 
+							System.out.printf("%-2s", roll2[i]);
+							if (bonusball1.equals("/") || Integer.parseInt(roll2[i]) + Integer.parseInt(bonusball1) == 10) // if roll 2 and bonus ball equal spare
+								System.out.printf("%-2c", SPARE);
+							else // else if second roll + bonus ball is not a spare
+								System.out.printf("%-2s", bonusball1);
+						}
+				}
+				else // else if first roll in frame 10 is NOT a strike
+				{
+					System.out.printf("%-2s", roll1[i]);
+					if (roll2[i].equals("/") || Integer.parseInt(roll1[i]) + Integer.parseInt(roll2[i]) == 10) // if roll 1 + roll 2 = 10 in frame 10
+					{ 
+						System.out.printf("%-2c", SPARE);
+						System.out.printf("%-2s", bonusball1);
+					}
+					else // else if first roll is NOT a strike and second roll is NOT a spare or strike
+						System.out.printf("%-2s", roll2[i]);
+				}
+			}	
+			
+		} // end of for loop for printing each frames bowling results
+		
+		System.out.println("\n_______________________________________________________________________________________");
+		System.out.printf("%-18s", framescoreprint);
+		//Next is printing of the score results per frame
+		for (int i = 0; i < framescore.length; i++){ 
+			System.out.printf("%-7d", framescore[i]);
+		}
+		
+		System.out.println("\n_______________________________________________________________________________________");
+		System.out.printf("%-18s", runtotalprint);
+		// Next is printing of the running total per frame
+		for (int i = 0; i < framescore.length; i++){
+			
+			runtotal += framescore[i];
+			System.out.printf("%-7d", runtotal);
+		}
+		
+		System.out.println("\n_______________________________________________________________________________________");
+		System.out.println("\n\n-------------------------------------");
+		System.out.print("\t*** END OF PROGRAM ***");
+		
+	}	// end of public static void main(String[] args)	
+}	</code></pre>
+		
+		
+		
+		</div>
+		<!-- End grid_10 -->
+	</div>
+	<!-- End container 12 -->
+	
+	
+	
+	
+<script>
+
+(function() {
+
+  init(); //on page load - show first slide, hidethe rest
+
+  function init() {
+
+    parents = document.getElementsByClassName('slideshow-container');
+
+    for (j = 0; j < parents.length; j++) {
+      var slides = parents[j].getElementsByClassName("mySlides");
+      slides[0].classList.add('active-slide');
+    }
+  }
+
+
+
+//prev/next functionality
+  links = document.querySelectorAll('.slideshow-container a');
+
+  for (i = 0; i < links.length; i++) {
+    links[i].onclick = function() {
+      current = this.parentNode;
+
+      var slides = current.getElementsByClassName("mySlides");
+      curr_slide = current.getElementsByClassName('active-slide')[0];
+      curr_slide.classList.remove('active-slide');
+      if (this.className == 'next') {
+
+        if (curr_slide.nextElementSibling.classList.contains('mySlides')) {
+          curr_slide.nextElementSibling.classList.add('active-slide');
+        } else {
+          slides[0].classList.add('active-slide');
+        }
+
+      }
+
+      if (this.className == 'prev') {
+
+        if (curr_slide.previousElementSibling) {
+          curr_slide.previousElementSibling.classList.add('active-slide');
+        } else {
+          slides[slides.length - 1].classList.add('active-slide');
+        }
+
+      }
+
+    }
+
+  }
+})();
+</script>
+	<script src="highlight.pack.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
